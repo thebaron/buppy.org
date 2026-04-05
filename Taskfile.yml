@@ -97,5 +97,5 @@ tasks:
         [ -s "$NVM_DIR/nvm.sh" ] && \
             . "$NVM_DIR/nvm.sh"
 
-        nvm use wrangler
+        nvm use wrangler && \
         npx wrangler deploy  --old-asset-ttl=0  --domain=buppy.org
