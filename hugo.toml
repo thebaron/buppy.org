@@ -4,7 +4,7 @@ title = 'The Brittany Puppy Project'
 
 theme = 'gallery'
 
-copyright = "© Your Name"
+copyright = "Made with ❤️  for all the 🐕."
 defaultContentLanguage = "en"
 disableKinds = ["taxonomy"]
 enableRobotsTXT = true
@@ -14,19 +14,18 @@ timeout = "120s"
 
 [params]
 defaultTheme = "dark"
-description = "Example site for hugo-theme-gallery"
+description = "All the dogs. All the years. All the destroyed toys, clothing, and furniture."
 [params.author]
-email = "user@example.com"
-name = "Your Name"
+email = "contact@buppy.org"
+name = "Baron and Stacy"
 [params.sass]
 transpiler = 'dartsass'
 [params.socialIcons]
-facebook = "https://www.facebook.com/"
-instagram = "https://www.instagram.com/"
-github = "https://github.com/nicokaiser/hugo-theme-gallery/"
-youtube = "https://www.youtube.com/"
-email = "mailto:user@example.com"
-#website = "https://example.com"
+# facebook = "https://www.facebook.com/"
+# instagram = "https://www.instagram.com/"
+# github = "https://github.com/nicokaiser/hugo-theme-gallery/"
+# youtube = "https://www.youtube.com/"
+# email = "mailto:user@example.com"
 #mastodon = "https://example.com"
 #pixelfed = "https://example.com"
 #mixcloud = "https://example.com"

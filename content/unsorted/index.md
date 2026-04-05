@@ -1,6 +1,5 @@
 ---
 description: Unsorted images.
-menus: "main"
 title: Unsorted
 weight: 998
 params:

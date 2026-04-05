@@ -5,12 +5,13 @@ title: Josie
 
 weight: 100
 params:
-  featured_image: 1035.jpg
+  featured_image: feat-1035.jpg
   theme: dark
   sort_order: desc
   sort_by: Name
 resources:
-  - src: 1035.jpg
+  - src: feat-1035.jpg
     params:
       cover: true
+      hidden: true
 ---
