@@ -1,0 +1,101 @@
+version: '3'
+
+# Credentials load order: root workspace .env, then this site's .env (overrides root).
+# When invoked via `task -d sites/example-site`, ../../.env resolves to workspace root.
+dotenv: ['../../.env', '.env']
+
+vars:
+  # Which publish adapter to use: rsync | s3
+  # Set PUBLISH_ADAPTER in this site's .env
+  PUBLISH_ADAPTER: '{{.PUBLISH_ADAPTER | default "rsync"}}'
+
+tasks:
+  build:
+    desc: Build the site with Hugo
+    cmds:
+      - hugo --minify --gc
+    sources:
+      - hugo.toml
+      - content/**/*
+      - layouts/**/*
+      - assets/**/*
+      - static/**/*
+      - data/**/*
+      - i18n/**/*
+      - archetypes/**/*
+    generates:
+      - public/**/*
+
+  serve:
+    desc: Start Hugo dev server with live reload
+    cmds:
+      - hugo server --buildDrafts --buildFuture --disableFastRender
+
+  publish:
+    desc: Publish the built site (delegates to publish:rsync or publish:s3)
+    cmds:
+      - task: publish:{{.PUBLISH_ADAPTER}}
+
+  deploy:
+    desc: Build then publish this site
+    cmds:
+      - task: build
+      - task: publish
+
+  # ---------------------------------------------------------------------------
+  # Rsync adapter
+  # Required .env vars:
+  #   PUBLISH_HOST        e.g. deploy@myserver.com
+  #   PUBLISH_REMOTE_PATH e.g. /var/www/example.com
+  # Optional .env vars:
+  #   RSYNC_SSH_KEY       Path to SSH private key
+  #   RSYNC_PORT          SSH port (default: 22)
+  # ---------------------------------------------------------------------------
+  publish:rsync:
+    desc: Publish via rsync over SSH
+    internal: true
+    cmds:
+      - |
+        SSH_OPTS="ssh"
+        [ -n "{{.RSYNC_SSH_KEY}}" ] && SSH_OPTS="$SSH_OPTS -i {{.RSYNC_SSH_KEY}}"
+        [ -n "{{.RSYNC_PORT}}"    ] && SSH_OPTS="$SSH_OPTS -p {{.RSYNC_PORT}}"
+
+        rsync -avz --checksum --delete \
+          -e "$SSH_OPTS" \
+          public/ \
+          {{.PUBLISH_HOST}}:{{.PUBLISH_REMOTE_PATH}}/
+
+  # ---------------------------------------------------------------------------
+  # S3 adapter  (requires AWS CLI: https://aws.amazon.com/cli/)
+  # Required .env vars:
+  #   PUBLISH_S3_BUCKET   e.g. example-com-static
+  # Optional .env vars:
+  #   PUBLISH_S3_PREFIX   Key prefix inside the bucket
+  #   PUBLISH_S3_ACL      e.g. public-read
+  #   AWS_ACCESS_KEY_ID   / AWS_SECRET_ACCESS_KEY / AWS_DEFAULT_REGION / AWS_PROFILE
+  # ---------------------------------------------------------------------------
+  publish:s3:
+    desc: Publish via AWS S3 sync
+    internal: true
+    vars:
+      S3_DEST: 's3://{{.PUBLISH_S3_BUCKET}}{{if .PUBLISH_S3_PREFIX}}/{{.PUBLISH_S3_PREFIX}}{{end}}'
+    cmds:
+      - |
+        aws s3 sync public/ {{.S3_DEST}}/ \
+          --delete \
+          {{if .PUBLISH_S3_ACL}}--acl {{.PUBLISH_S3_ACL}}{{end}} \
+          {{if .AWS_DEFAULT_REGION}}--region {{.AWS_DEFAULT_REGION}}{{end}}
+
+  publish:cloudflare:
+    desc: Publish to cloudflare
+    internal: true
+    cmds:
+      - |
+
+        [ -z "${NVM_DIR}" ] && \
+            export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \
+            . "$NVM_DIR/nvm.sh"
+
+        nvm use wrangler
+        npx wrangler deploy  --old-asset-ttl=0  --domain=buppy.org

@@ -1,0 +1,13 @@
+.env
+*/.env
+
+.wrangler
+.task
+
+# Hugo build output
+public/
+resources/
+
+# OS
+.DS_Store
+Thumbs.db
