@@ -9,7 +9,7 @@ defaultContentLanguage = "en"
 disableKinds = ["taxonomy"]
 enableRobotsTXT = true
 languageCode = "en"
-timeZone = "America/New York"
+timeZone = "America/New_York"
 timeout = "120s"
 
 [params]
